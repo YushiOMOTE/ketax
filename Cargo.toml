@@ -1,0 +1,22 @@
+[package]
+name = "ketax"
+version = "0.1.0"
+authors = ["Yushi OMOTE <yushiomote@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+actix = "0.10"
+actix-cors = "0.5"
+actix-web = "3.3"
+actix-web-actors = "3.0"
+anyhow = "1.0"
+chrono = "0.4"
+env_logger = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sled = "0.34"
+structopt = "0.3"
+juniper = "0.15.5"
+juniper_actix = "0.2"
+juniper_graphql_ws = "0.2.4"
+log = "0.4"
