@@ -12,16 +12,18 @@ fn timestamp() -> String {
 }
 
 #[derive(Clone, GraphQLObject, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Image {
     pub id: String,
     pub filename: Option<String>,
-    pub tags: Vec<String>,
+    pub tags: Option<Vec<String>>,
     pub access_count: Option<i32>,
     pub access_date: Option<String>,
     pub release_date: Option<String>,
 }
 
 #[derive(Clone, GraphQLInputObject, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct NewImage {
     pub id: String,
     pub filename: Option<String>,
@@ -36,7 +38,7 @@ impl From<NewImage> for Image {
         Self {
             id: new.id,
             filename: new.filename,
-            tags: new.tags.unwrap_or(vec![]),
+            tags: new.tags,
             access_count: new.access_count,
             access_date: new.access_date,
             release_date: new.release_date,

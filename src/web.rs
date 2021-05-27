@@ -1,6 +1,7 @@
 use actix_web::{middleware, web, App, Error, HttpResponse, HttpServer};
 use anyhow::Result;
 use juniper_actix::{graphiql_handler, graphql_handler, playground_handler};
+use log::*;
 
 use crate::db::Db;
 use crate::graphql::{schema, Context, Image, Schema};
@@ -14,8 +15,8 @@ async fn playground_route() -> Result<HttpResponse, Error> {
 }
 
 async fn graphql_route(
-    req: actix_web::HttpRequest,
-    payload: actix_web::web::Payload,
+    req: web::HttpRequest,
+    payload: web::Payload,
     db: web::Data<Db>,
     schema: web::Data<Schema>,
 ) -> Result<HttpResponse, Error> {
@@ -38,10 +39,20 @@ async fn import(db: web::Data<Db>, imgs: web::Json<Vec<Image>>) -> Result<String
     Ok("OK".into())
 }
 
-pub async fn run(addr: &str, db: Db) -> Result<()> {
+fn json_cfg(limit_kb: usize) -> web::JsonConfig {
+    web::JsonConfig::default()
+        .limit(limit_kb * 1024)
+        .error_handler(|e, _| {
+            error!("{:?}", e);
+            e.into()
+        })
+}
+
+pub async fn run(addr: &str, db: Db, limit_kb: usize) -> Result<()> {
     let server = HttpServer::new(move || {
         App::new()
             .data(db.clone())
+            .data(json_cfg(limit_kb))
             .data(schema())
             .wrap(middleware::Compress::default())
             .wrap(middleware::Logger::default())

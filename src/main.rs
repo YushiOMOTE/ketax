@@ -10,6 +10,9 @@ use crate::db::Db;
 
 #[derive(StructOpt, Debug)]
 struct Opt {
+    /// Size limit for json payload in KB
+    #[structopt(short = "l", long = "limit", default_value = "4096", env)]
+    limit_kb: usize,
     /// Directory path for sled database to store data.
     #[structopt(short = "d", long = "db", default_value = "/tmp/ketadb", env)]
     db: String,
@@ -25,7 +28,7 @@ async fn run() -> Result<()> {
     info!("Start {:?}", opt);
 
     let db = Db::new(&opt.db)?;
-    web::run(&opt.addr, db).await?;
+    web::run(&opt.addr, db, opt.limit_kb).await?;
 
     Ok(())
 }
