@@ -62,13 +62,23 @@ pub struct Query;
 
 #[graphql_object(context = Context)]
 impl Query {
-    fn apiVersion() -> String {
+    fn version() -> String {
         "1.0".into()
     }
 
-    #[graphql(arguments(limit(description = "limit")))]
-    fn images(ctx: &Context, limit: Option<i32>) -> FieldResult<Vec<Image>> {
-        let imgs = ctx.db.list(limit.map(|v| v as usize))?;
+    #[graphql(arguments(ids(description = "list of the ids of the images")))]
+    fn images(ctx: &Context, ids: Option<Vec<String>>) -> FieldResult<Vec<Image>> {
+        let imgs = match ids {
+            Some(ids) => {
+                let imgs: Result<Vec<_>, _> = ids
+                    .into_iter()
+                    .map(|id| ctx.db.get(&id))
+                    .filter_map(|i| i.transpose())
+                    .collect();
+                imgs?
+            }
+            None => ctx.db.list()?,
+        };
         Ok(imgs)
     }
 

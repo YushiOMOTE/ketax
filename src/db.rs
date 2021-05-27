@@ -24,11 +24,10 @@ impl Db {
         Ok(value)
     }
 
-    pub fn list<T: DeserializeOwned>(&self, limit: Option<usize>) -> Result<Vec<T>> {
+    pub fn list<T: DeserializeOwned>(&self) -> Result<Vec<T>> {
         let imgs: Result<Vec<_>> = self
             .db
             .iter()
-            .take(limit.unwrap_or(usize::MAX))
             .map(|e| {
                 let (_, value) = e?;
                 let img = serde_json::from_slice(&value)?;

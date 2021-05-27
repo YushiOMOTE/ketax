@@ -25,9 +25,7 @@ async fn graphql_route(
 }
 
 async fn export(db: web::Data<Db>) -> Result<String, Error> {
-    let imgs: Vec<Image> = db
-        .list(None)
-        .map_err(|_| HttpResponse::InternalServerError())?;
+    let imgs: Vec<Image> = db.list().map_err(|_| HttpResponse::InternalServerError())?;
     Ok(serde_json::to_string(&imgs)?)
 }
 
